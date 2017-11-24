@@ -20,7 +20,7 @@
 
 """ This script is an importer for Vicon CSV motion capture data """
 
-from math import radians, degrees
+from math import ceil
 import csv
 
 def read_csv_header(context, csvfile):
@@ -50,7 +50,9 @@ def read_csv(context, obj_index, frame_rate, csvfile):
     col_index = obj_index * 6 + 2;
     csvreader = csv.reader(csvfile);
 
-    decimation = int(frame_rate / scene.render.fps);
+    decimation = int(ceil(frame_rate / scene.render.fps));
+    print(frame_rate / scene.render.fps);
+    print("Decimation factor:", decimation)
 
     # Read data
     for i, row in enumerate(csvreader):
