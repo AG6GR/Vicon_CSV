@@ -56,11 +56,13 @@ def read_csv(context, obj_index, frame_rate, csvfile):
     for i, row in enumerate(csvreader):
         if len(row) == 0:
             break;
+        elif len(row) < 8:
+            print("No data on row #:", i);
+            continue;
         if i % decimation != 0:
             continue;
-        # print(row);
-        scene.frame_set(int(round(float(row[0]) / decimation)));
 
+        scene.frame_set(int(round(float(row[0]) / decimation)));
         obj.location = [float(row[j]) / 1000 for j in range(col_index + 3, col_index + 6)]
         obj.keyframe_insert("location")
 

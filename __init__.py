@@ -64,7 +64,7 @@ class ImportViconCSV(Operator, ImportHelper):
     frame_rate = FloatProperty(
         name="FPS",
         description="Tracking Frames per Second",
-        default=60.0,
+        default=100.0,
         )
 
     @classmethod
