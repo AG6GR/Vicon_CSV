@@ -3,11 +3,11 @@ Blender addon for importing motion capture data stored in CSV files exported by 
 
 # Usage
 
-<img src='doc/ImportMenu.PNG' alt='Import menu option' width=30%/>
+<center><img src='doc/ImportMenu.PNG' alt='Import menu option' width=75%/></center>
 
 To use the addon, select the Blender object you wish to map the motion tracking data to and select Vicon CSV (.csv) under File->Import.
 
-<img src='doc/ImportOptions.PNG' alt='Import dialog options' width=30%/>
+<center><img src='doc/ImportOptions.PNG' alt='Import dialog options' width=30%/></center>
 
 In the resulting dialog select the CSV file containing the exported motion capture data. On the left sidebar, specify the motion capture data frame rate and optionally the name of the tracked object to import. If no name is given, the addon defaults to the first object to appear in the CSV file.
 
