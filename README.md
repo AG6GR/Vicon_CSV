@@ -1,6 +1,9 @@
 # Vicon Motion Capture Importer
 Blender addon for importing motion capture data stored in CSV files exported by [Vicon Tracker](https://www.vicon.com/products/software/tracker).
 
+# Install
+Click on the "Clone or Download" button on this Github repo and select "Download ZIP." Then install the addon in Blender via the Addon tab of the User Preferences dialog. Check the checkbox on the newly imported addon to enable it. For more general info about installing and using Blender addons, please see the [Blender Manual](https://docs.blender.org/manual/en/dev/preferences/addons.html)
+
 # Usage
 
 <center><img src='doc/ImportMenu.PNG' alt='Import menu option' width=75%/></center>
