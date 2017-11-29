@@ -14,10 +14,7 @@ In the resulting dialog select the CSV file containing the exported motion captu
 If the frame rate of the Blender scene does not match the motion capture data's framerate, the addon will perform simple interpolation to compensate.
 
 # Recording Process
-These instructions were written for Vicon Tracker version 3.5.
-
-## System Setup
-Beyond performing the standard object setup and camera calibration workflow, there are a couple extra settings to be aware of before making recordings.
+These instructions were written for Vicon Tracker version 3.5. Beyond performing the standard object setup and camera calibration workflow, there are a couple extra settings to be aware of before making recordings.
 
 <center><img src='doc/SystemSettings.PNG' alt='System Settings' width=50%/></center>
 
