@@ -80,14 +80,14 @@ def linear_interp(bl_frame, bl_fps, prevrow, nextrow, col_index, frame_rate):
     Returns a tuple of lists containing the location and rotation values
     as floats. Locations are reported in units of meters.
     '''
-    print("bl_frame", bl_frame, "prevrow", prevrow, "nextrow", nextrow)
+
     if prevrow is None or len(prevrow) == 0:
         return get_rotloc(nextrow, col_index)
 
     # Calculate interpolation factor
     alpha = (bl_frame / bl_fps * frame_rate) - get_frame_num(prevrow)
     alpha /= get_frame_num(nextrow) - get_frame_num(prevrow)
-    print(alpha)
+
     prev_loc, prev_rot = get_rotloc(prevrow, col_index)
     next_loc, next_rot = get_rotloc(nextrow, col_index)
 
@@ -139,12 +139,9 @@ def read_csv(context, obj_index, frame_rate, csvfile):
 
         # Increase by one since Blender starts with frame 1 by default
         scene.frame_set(bl_frame + 1)
-        print(bl_frame / bl_fps * frame_rate)
-        #print("bl_frame", bl_frame, "prevrow", prevrow, "nextrow", nextrow)
         obj.location, obj.rotation_euler = linear_interp(bl_frame, bl_fps,
                                                          prevrow, nextrow,
                                                          col_index, frame_rate)
-        print("obj.loc", obj.location, "obj.rotation_euler", obj.rotation_euler)
         obj.keyframe_insert("location")
         obj.keyframe_insert("rotation_euler")
 
