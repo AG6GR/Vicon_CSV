@@ -16,6 +16,18 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8-80 compliant>
+
+import bpy
+from bpy.types import Operator
+from bpy_extras.io_utils import ImportHelper
+from bpy.props import (
+        StringProperty,
+        BoolProperty,
+        EnumProperty,
+        FloatProperty,
+        )
+
 bl_info = {
     "name": "Vicon CSV",
     "author": "Sunny He",
@@ -36,16 +48,6 @@ if "bpy" in locals():
         importlib.reload(import_vicon_csv)
 
 
-import bpy
-from bpy.types import Operator
-from bpy_extras.io_utils import ImportHelper
-from bpy.props import (
-        StringProperty,
-        BoolProperty,
-        EnumProperty,
-        FloatProperty,
-        )
-
 class ImportViconCSV(Operator, ImportHelper):
     """Import animation from .csv file, exported from Vicon Tracker """
     bl_idname = "import_scene.import_vicon_csv"
@@ -55,7 +57,7 @@ class ImportViconCSV(Operator, ImportHelper):
 
     filter_glob = StringProperty(default="*.csv", options={'HIDDEN'})
 
-    tracking_object_name = StringProperty(
+    tracking_obj_name = StringProperty(
         name="Name",
         description="Name of the Vicon tracked object to import",
         default="",
@@ -76,41 +78,47 @@ class ImportViconCSV(Operator, ImportHelper):
         self.report({'PROPERTY'}, self.filepath)
 
         with open(self.filepath, 'r') as csvfile:
-            object_list = import_vicon_csv.read_csv_header(context, csvfile);
-            print(object_list);
-            if len(object_list) == 0:
-                self.report({'ERROR'}, "No tracked objects found!");
+            obj_list = import_vicon_csv.read_csv_header(context, csvfile)
+            print(obj_list)
+            if len(obj_list) == 0:
+                self.report({'ERROR'}, "No tracked objects found!")
                 return {'CANCELLED'}
 
-            obj_index = 0;
-            if self.tracking_object_name != "":
-                if self.tracking_object_name in object_list:
-                    obj_index = object_list.index(self.tracking_object_name);
+            obj_index = 0
+            if self.tracking_obj_name != "":
+                if self.tracking_obj_name in obj_list:
+                    obj_index = obj_list.index(self.tracking_obj_name)
                 else:
-                    self.tracking_object_name = "{0}:{0}".format(self.tracking_object_name)
-                    if self.tracking_object_name not in object_list:
-                        self.report({'ERROR'}, "Specified object not found");
+                    self.tracking_obj_name = "{0}:{0}".format(
+                        self.tracking_obj_name)
+                    if self.tracking_obj_name not in obj_list:
+                        self.report({'ERROR'}, "Specified object not found")
                         return {'CANCELLED'}
                     else:
-                        obj_index = object_list.index(self.tracking_object_name);
+                        obj_index = obj_list.index(self.tracking_obj_name)
 
-            import_vicon_csv.read_csv(context, obj_index, self.frame_rate, csvfile);
+            import_vicon_csv.read_csv(context, obj_index,
+                                      self.frame_rate, csvfile)
 
-        return {'FINISHED'};
+        return {'FINISHED'}
+
     def draw(self, context):
         layout = self.layout
         layout.label(text="Tracked Object:")
         row = layout.row(align=True)
-        row.prop(self, "tracking_object_name")
+        row.prop(self, "tracking_obj_name")
         row = layout.row(align=True)
         row.prop(self, "frame_rate")
+
 
 def menu_func_import(self, context):
     self.layout.operator(ImportViconCSV.bl_idname, text="Vicon CSV (.csv)")
 
+
 def register():
     bpy.utils.register_class(ImportViconCSV)
     bpy.types.INFO_MT_file_import.append(menu_func_import)
+
 
 def unregister():
     bpy.utils.unregister_class(ImportViconCSV)

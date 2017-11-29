@@ -23,23 +23,47 @@
 from math import ceil
 import csv
 
+
 def read_csv_header(context, csvfile):
     """
     Parse the header of a Vicon csv file.
     Returns list of tracked object names.
     """
     # Skip garbage object count
-    csvfile.readline();
-    csvfile.readline();
+    csvfile.readline()
+    csvfile.readline()
 
-    csvreader = csv.reader(csvfile);
-    object_name_row = next(csvreader, None);
+    csvreader = csv.reader(csvfile)
+    object_name_row = next(csvreader, None)
 
     # Skip column labels
-    next(csvreader, None);
-    next(csvreader, None);
+    next(csvreader, None)
+    next(csvreader, None)
 
-    return [object_name_row[i][len("Global Angle "):] for i in range(2, len(object_name_row) - 1, 6)]
+    # Also remove the "Global Angle " prefix from the object names
+    return [object_name_row[i][len("Global Angle "):]
+            for i in range(2, len(object_name_row) - 1, 6)]
+
+
+def get_rotloc(row, col_index):
+    '''
+    Extract the rotation and location values from a given row of the parse csv.
+    row is a list of strings representing the contents of each column from
+    the exported csv file. col_index is the integer index of the column
+    number corresponding to the object whose data is to be extracted.
+
+    Returns a tuple of lists containing the location and rotation values
+    as floats. Locations are converted to use units of meters.
+    '''
+
+    # First three columns contain rotation x,y,z
+    rotation = [float(row[i])
+                for i in range(col_index, col_index + 3)]
+    # Next three columns contain location x,y,z
+    location = [float(row[i]) / 1000
+                for i in range(col_index + 3, col_index + 6)]
+    return (location, rotation)
+
 
 def read_csv(context, obj_index, frame_rate, csvfile):
 
@@ -47,31 +71,28 @@ def read_csv(context, obj_index, frame_rate, csvfile):
     scene = context.scene
     obj = context.active_object
 
-    col_index = obj_index * 6 + 2;
-    csvreader = csv.reader(csvfile);
+    # Each object's data takes six columns, plus two for frame/subframe number
+    col_index = obj_index * 6 + 2
+    csvreader = csv.reader(csvfile)
 
-    decimation = int(ceil(frame_rate / scene.render.fps));
-    print(frame_rate / scene.render.fps);
+    decimation = int(ceil(frame_rate / scene.render.fps))
+    print(frame_rate / scene.render.fps)
     print("Decimation factor:", decimation)
 
     # Read data
     for i, row in enumerate(csvreader):
         if len(row) == 0:
-            break;
+            break
         elif len(row) < 8:
-            print("No data on row #:", i);
-            continue;
+            print("No data on row #:", i)
+            continue
         if i % decimation != 0:
-            continue;
+            continue
 
-        scene.frame_set(int(round(float(row[0]) / decimation)));
-        obj.location = [float(row[j]) / 1000 for j in range(col_index + 3, col_index + 6)]
+        scene.frame_set(int(round(float(row[0]) / decimation)))
+        obj.location, obj.rotation_euler = get_rotloc(row, col_index)
         obj.keyframe_insert("location")
-
-        obj.rotation_euler.x = float(row[col_index])
-        obj.rotation_euler.y = float(row[col_index + 1])
-        obj.rotation_euler.z = float(row[col_index + 2])
-        obj.keyframe_insert("rotation_euler");
+        obj.keyframe_insert("rotation_euler")
 
         # print("Location:", obj.location, "Rotation:", obj.rotation_euler);
 
