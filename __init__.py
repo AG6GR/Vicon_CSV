@@ -89,6 +89,7 @@ class ImportViconCSV(Operator, ImportHelper):
                 if self.tracking_obj_name in obj_list:
                     obj_index = obj_list.index(self.tracking_obj_name)
                 else:
+                    # Also expand to full name and check
                     self.tracking_obj_name = "{0}:{0}".format(
                         self.tracking_obj_name)
                     if self.tracking_obj_name not in obj_list:
