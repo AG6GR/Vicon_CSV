@@ -19,18 +19,18 @@ These instructions were written for Vicon Tracker version 3.5.
 ## System Setup
 Beyond performing the standard object setup and camera calibration workflow, there are a couple extra settings to be aware of before making recordings.
 
-<center><img src='doc/SystemSettings.PNG' alt='System Settings' width=30%/></center>
+<center><img src='doc/SystemSettings.PNG' alt='System Settings' width=50%/></center>
 
 Under the System tab, double check the system frame rate. Since the frame rate is not exported with the motion capture data in the CSV, it will be necessary to enter it manually when importing into Blender.
 
-<center><img src='doc/ObjectSettings.PNG' alt='Object Settings' width=30%/></center>
+<center><img src='doc/ObjectSettings.PNG' alt='Object Settings' width=50%/></center>
 
 For the objects that will be tracked, open the advanced properties and ensure the rotation representation is set to "XYZ." This ensures the ordering of exported rotation data is correctly matched when importing into Blender. If this option is not available, press the pause button at the top of the object selection section, or set Vicon Tracker to Offline mode. 
 
-<center><img src='doc/RecordingSettings.PNG' alt='Recording Settings' width=30%/></center>
+<center><img src='doc/RecordingSettings.PNG' alt='Recording Settings' width=50%/></center>
 
 Next, start the recording from the recording tab. Vicon Tracker does not automatically load recorded trials, so use the Load Trial button under playback to open the take you wish to export.
 
-<center><img src='doc/CSVSettings.PNG' alt='CSV Export Settings' width=30%/></center>
+<center><img src='doc/CSVSettings.PNG' alt='CSV Export Settings' width=50%/></center>
 
 Before exporting, open the advanced settings in the Export CSV section and check that the angle representation is set to Helical. For now, this addon only implements importing Euler rotations. This section also has options for selecting what frames and objects to export. Once everything is set, click Export. The outputted CSV file should be ready for importing into Blender.
