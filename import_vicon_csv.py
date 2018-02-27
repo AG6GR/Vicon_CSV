@@ -22,6 +22,7 @@
 
 from math import ceil
 import csv
+import re
 
 
 def read_csv_header(context, csvfile):
@@ -40,9 +41,15 @@ def read_csv_header(context, csvfile):
     next(csvreader)
     next(csvreader)
 
-    # Also remove the "Global Angle " prefix from the object names
-    return [object_name_row[i][len("Global Angle "):]
-            for i in range(2, len(object_name_row) - 1, 6)]
+    # Also remove the "Global Angle" prefix from the object names
+    name_matcher = re.compile(r"\w+:\w+")
+    names = []
+
+    for i in range(2, len(object_name_row) - 1, 6):
+        match = name_matcher.search(object_name_row[i])
+        if match is not None:
+            names.append(match.group())
+    return names
 
 
 def get_frame_num(row):
@@ -116,8 +123,13 @@ def read_csv(context, obj_index, frame_rate, csvfile):
     prevrow = None
     nextrow = next(csvreader, [])
 
+    # Find first frame where object appears
+    while len(nextrow) == 1:
+        nextrow = next(csvreader, [])
+
+    # Blender time is advanced but no keyframes are inserted
     # Note all frame numbers are 0 based for easier time conversion
-    bl_frame = 0
+    bl_frame = int(ceil(get_frame_num(nextrow) / frame_rate * bl_fps))
 
     # Read data
     while len(nextrow) > 0:
