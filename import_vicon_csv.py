@@ -20,7 +20,8 @@
 
 """ This script is an importer for Vicon CSV motion capture data """
 
-from math import ceil
+from math import ceil, sqrt
+from mathutils import Quaternion
 import csv
 import re
 
@@ -68,9 +69,23 @@ def get_rotloc(row, col_index):
     as floats. Locations are reported in units of meters.
     '''
 
-    # First three columns contain rotation x,y,z
-    rotation = [float(row[i])
+    # If object is not in view, default to at origin with 1,0,0,0 rotation
+    if len(row) < 3:
+        return 
+
+    # First three columns contain Helical rotation x,y,z
+    axis = [float(row[i])
                 for i in range(col_index, col_index + 3)]
+
+    angle = sqrt(axis[0] ** 2 + axis[1] ** 2 + axis[2] ** 2)
+    rotation = None
+
+    if axis[0] == 0 and axis[1] == 0 and axis[2] == 0:
+        rotation = Quaternion()
+    else:
+        axis = [value / angle for value in axis]
+        rotation = Quaternion(axis, angle)
+
     # Next three columns contain location x,y,z
     location = [float(row[i]) / 1000
                 for i in range(col_index + 3, col_index + 6)]
@@ -100,8 +115,7 @@ def linear_interp(bl_frame, bl_fps, prevrow, nextrow, col_index, frame_rate):
 
     location = [(1 - alpha) * prev_loc[i] + alpha * next_loc[i]
                 for i in range(len(prev_loc))]
-    rotation = [(1 - alpha) * prev_rot[i] + alpha * next_rot[i]
-                for i in range(len(prev_loc))]
+    rotation = prev_rot.slerp(next_rot, alpha)
 
     return (location, rotation)
 
@@ -111,6 +125,9 @@ def read_csv(context, obj_index, frame_rate, csvfile):
     scene = context.scene
     obj = context.active_object
     bl_fps = scene.render.fps
+
+    # Change rotation mode to Quaternion
+    obj.rotation_mode = 'QUATERNION'
 
     # Each object's data takes six columns, plus two for frame/subframe number
     col_index = obj_index * 6 + 2
@@ -151,11 +168,11 @@ def read_csv(context, obj_index, frame_rate, csvfile):
 
         # Increase by one since Blender starts with frame 1 by default
         scene.frame_set(bl_frame + 1)
-        obj.location, obj.rotation_euler = linear_interp(bl_frame, bl_fps,
+        obj.location, obj.rotation_quaternion = linear_interp(bl_frame, bl_fps,
                                                          prevrow, nextrow,
                                                          col_index, frame_rate)
         obj.keyframe_insert("location")
-        obj.keyframe_insert("rotation_euler")
+        obj.keyframe_insert("rotation_quaternion")
 
         bl_frame += 1
 
