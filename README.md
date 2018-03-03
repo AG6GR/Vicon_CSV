@@ -30,3 +30,6 @@ Next, start the recording from the recording tab. Vicon Tracker does not automat
 <center><img src='doc/CSVSettings.PNG' alt='CSV Export Settings' width=50%/></center>
 
 Before exporting, open the advanced settings in the Export CSV section and check that the angle representation is set to Helical. This section also has options for selecting what frames and objects to export. Once everything is set, click Export. The outputted CSV file should be ready for importing into Blender.
+
+# Appendix - Rotation Modes
+Vicon Tracker's default rotation angle representation is the "Helical" representation. This is simply a compact version of the common axis-angle rotation representation. The Helical rotation is represented as a non-normalized 3-vector, with the direction of this 3-vector encoding the axis of rotation, while its norm (length) encodes the angle of rotation in radians.
