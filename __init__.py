@@ -27,6 +27,8 @@ from bpy.props import (
         EnumProperty,
         FloatProperty,
         )
+from mathutils import Euler, Quaternion, Vector
+from math import degrees
 
 bl_info = {
     "name": "Vicon CSV",
@@ -69,6 +71,43 @@ class ImportViconCSV(Operator, ImportHelper):
         default=100.0,
         )
 
+    offset_rx = FloatProperty(
+        name="X",
+        description="Rotation X (deg)",
+        default=0.0,
+        )
+
+    offset_ry = FloatProperty(
+        name="Y",
+        description="Rotation Y (deg)",
+        default=0.0,
+        )
+
+    offset_rz = FloatProperty(
+        name="Z",
+        description="Rotation Z (deg)",
+        default=0.0,
+        )
+
+    offset_x = FloatProperty(
+        name="X",
+        description="Translation X (deg)",
+        default=0.0,
+        )
+
+    offset_y = FloatProperty(
+        name="Y",
+        description="Translation Y (deg)",
+        default=0.0,
+        )
+
+    offset_z = FloatProperty(
+        name="Z",
+        description="Translation Z (deg)",
+        default=0.0,
+        )
+
+
     @classmethod
     def poll(cls, context):
         return context.active_object is not None
@@ -98,8 +137,15 @@ class ImportViconCSV(Operator, ImportHelper):
                     else:
                         obj_index = obj_list.index(self.tracking_obj_name)
 
-            import_vicon_csv.read_csv(context, obj_index,
-                                      self.frame_rate, csvfile)
+            # Create offset rotation and translation
+            offset_rot = Euler((degrees(self.offset_rx),
+                                degrees(self.offset_ry),
+                                degrees(self.offset_rz))).to_quaternion()
+
+            offset_pos = Vector((self.offset_x, self.offset_y, self.offset_z))
+
+            import_vicon_csv.read_csv(context, obj_index, self.frame_rate,
+                                      csvfile, offset_rot, offset_pos)
 
         return {'FINISHED'}
 
@@ -110,6 +156,19 @@ class ImportViconCSV(Operator, ImportHelper):
         row.prop(self, "tracking_obj_name")
         row = layout.row(align=True)
         row.prop(self, "frame_rate")
+
+        layout.label(text="Offset:")
+        row = layout.row()
+        box = row.box()
+        box.label(text="Rotation (deg)")
+        box.prop(self, "offset_rx")
+        box.prop(self, "offset_ry")
+        box.prop(self, "offset_rz")
+        box = row.box()
+        box.label(text="Translation")
+        box.prop(self, "offset_x")
+        box.prop(self, "offset_y")
+        box.prop(self, "offset_z")
 
 
 def menu_func_import(self, context):

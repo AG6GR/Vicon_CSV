@@ -20,8 +20,8 @@
 
 """ This script is an importer for Vicon CSV motion capture data """
 
-from math import ceil, sqrt
-from mathutils import Quaternion
+from math import ceil, sqrt, pi
+from mathutils import Quaternion, Vector
 import csv
 import re
 
@@ -87,12 +87,12 @@ def get_rotloc(row, col_index):
         rotation = Quaternion(axis, angle)
 
     # Next three columns contain location x,y,z
-    location = [float(row[i]) / 1000
-                for i in range(col_index + 3, col_index + 6)]
+    location = Vector([float(row[i]) / 1000
+                for i in range(col_index + 3, col_index + 6)])
     return (location, rotation)
 
 
-def linear_interp(bl_frame, bl_fps, prevrow, nextrow, col_index, frame_rate):
+def interp(bl_frame, bl_fps, prevrow, nextrow, col_index, frame_rate):
     '''
     Perform linear interpolation to estimate the rotation and location for
     the Blender frame number bl_frame based on the data for previous and
@@ -113,14 +113,13 @@ def linear_interp(bl_frame, bl_fps, prevrow, nextrow, col_index, frame_rate):
     prev_loc, prev_rot = get_rotloc(prevrow, col_index)
     next_loc, next_rot = get_rotloc(nextrow, col_index)
 
-    location = [(1 - alpha) * prev_loc[i] + alpha * next_loc[i]
-                for i in range(len(prev_loc))]
+    location = prev_loc.lerp(next_loc, alpha)
     rotation = prev_rot.slerp(next_rot, alpha)
 
     return (location, rotation)
 
 
-def read_csv(context, obj_index, frame_rate, csvfile):
+def read_csv(context, obj_index, frame_rate, csvfile, offset_rot, offset_pos):
 
     scene = context.scene
     obj = context.active_object
@@ -168,9 +167,10 @@ def read_csv(context, obj_index, frame_rate, csvfile):
 
         # Increase by one since Blender starts with frame 1 by default
         scene.frame_set(bl_frame + 1)
-        obj.location, obj.rotation_quaternion = linear_interp(bl_frame, bl_fps,
-                                                         prevrow, nextrow,
-                                                         col_index, frame_rate)
+        new_loc, new_rot = interp(bl_frame, bl_fps, prevrow, nextrow,
+                                         col_index, frame_rate)
+        obj.rotation_quaternion = new_rot * offset_rot
+        obj.location = new_loc + obj.rotation_quaternion * offset_pos
         obj.keyframe_insert("location")
         obj.keyframe_insert("rotation_quaternion")
 
