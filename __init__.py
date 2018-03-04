@@ -33,11 +33,11 @@ from math import degrees
 bl_info = {
     "name": "Vicon CSV",
     "author": "Sunny He",
-    "version": (0, 2),
+    "version": (1, 0),
     "blender": (2, 79, 0),
     "location": "File > Import/Export > Vicon CSV (.csv)",
     "description": "Import Vicon tracking data as object animation",
-    "warning": "",
+    "wiki_url": "https://github.com/AG6GR/Vicon_CSV",
     "category": "Import-Export",
 }
 
