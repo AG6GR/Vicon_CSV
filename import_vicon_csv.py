@@ -140,7 +140,7 @@ def read_csv(context, obj_index, frame_rate, csvfile, offset_rot, offset_pos):
     nextrow = next(csvreader, [])
 
     # Find first frame where object appears
-    while len(nextrow) == 1:
+    while len(nextrow) < col_index or nextrow[col_index] == "":
         nextrow = next(csvreader, [])
 
     # Blender time is advanced but no keyframes are inserted
@@ -157,13 +157,13 @@ def read_csv(context, obj_index, frame_rate, csvfile, offset_rot, offset_pos):
             nextrow = next(csvreader, [])
 
             # Skip samples with no data
-            while len(nextrow) == 1:
+            while len(nextrow) < col_index or nextrow[col_index] == "":
                 nextrow = next(csvreader, [])
 
-            # Stop if end of file is reached
-            if len(nextrow) == 0:
-                scene.frame_end = max(scene.frame_end, bl_frame)
-                return {'FINISHED'}
+                # Stop if end of file is reached
+                if len(nextrow) == 0:
+                    scene.frame_end = max(scene.frame_end, bl_frame)
+                    return {'FINISHED'}
 
         # Increase by one since Blender starts with frame 1 by default
         scene.frame_set(bl_frame + 1)
