@@ -34,7 +34,7 @@ bl_info = {
     "name": "Vicon CSV",
     "author": "Sunny He",
     "version": (1, 1),
-    "blender": (2, 79, 0),
+    "blender": (2, 83, 0),
     "location": "File > Import/Export > Vicon CSV (.csv)",
     "description": "Import Vicon tracking data as object animation",
     "wiki_url": "https://github.com/AG6GR/Vicon_CSV",
@@ -55,53 +55,51 @@ class ImportViconCSV(Operator, ImportHelper):
     bl_idname = "import_scene.import_vicon_csv"
     bl_label = "Import Vicon CSV File"
 
-    filename_ext = ".csv"
+    filter_glob : StringProperty(default="*.csv", options={'HIDDEN'})
 
-    filter_glob = StringProperty(default="*.csv", options={'HIDDEN'})
-
-    tracking_obj_name = StringProperty(
+    tracking_obj_name : StringProperty(
         name="Name",
         description="Name of the Vicon tracked object to import",
         default="",
         )
 
-    frame_rate = FloatProperty(
+    frame_rate : FloatProperty(
         name="FPS",
         description="Tracking Frames per Second",
         default=100.0,
         )
 
-    offset_rx = FloatProperty(
+    offset_rx : FloatProperty(
         name="X",
         description="Rotation X (deg)",
         default=0.0,
         )
 
-    offset_ry = FloatProperty(
+    offset_ry : FloatProperty(
         name="Y",
         description="Rotation Y (deg)",
         default=0.0,
         )
 
-    offset_rz = FloatProperty(
+    offset_rz : FloatProperty(
         name="Z",
         description="Rotation Z (deg)",
         default=0.0,
         )
 
-    offset_x = FloatProperty(
+    offset_x : FloatProperty(
         name="X",
         description="Translation X (deg)",
         default=0.0,
         )
 
-    offset_y = FloatProperty(
+    offset_y : FloatProperty(
         name="Y",
         description="Translation Y (deg)",
         default=0.0,
         )
 
-    offset_z = FloatProperty(
+    offset_z : FloatProperty(
         name="Z",
         description="Translation Z (deg)",
         default=0.0,
@@ -177,12 +175,12 @@ def menu_func_import(self, context):
 
 def register():
     bpy.utils.register_class(ImportViconCSV)
-    bpy.types.INFO_MT_file_import.append(menu_func_import)
+    bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
 
 def unregister():
     bpy.utils.unregister_class(ImportViconCSV)
-    bpy.types.INFO_MT_file_import.remove(menu_func_import)
+    bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
 
 if __name__ == "__main__":
     register()

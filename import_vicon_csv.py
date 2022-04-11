@@ -169,8 +169,8 @@ def read_csv(context, obj_index, frame_rate, csvfile, offset_rot, offset_pos):
         scene.frame_set(bl_frame + 1)
         new_loc, new_rot = interp(bl_frame, bl_fps, prevrow, nextrow,
                                          col_index, frame_rate)
-        obj.rotation_quaternion = new_rot * offset_rot
-        obj.location = new_loc + obj.rotation_quaternion * offset_pos
+        obj.rotation_quaternion = new_rot @ offset_rot
+        obj.location = new_loc + obj.rotation_quaternion @ offset_pos
         obj.keyframe_insert("location")
         obj.keyframe_insert("rotation_quaternion")
 
